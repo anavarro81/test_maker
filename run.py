@@ -1,8 +1,6 @@
 import os
 import re
 
-
-
 def load_data():
 
     # Se abren los tres ficheros del juego y se cargan en listas. 
@@ -43,12 +41,6 @@ conj_opciones = []
 user_fails = []
 user_answer = []
 
-def show_score(score, user_fails):
-    print ('-- Se ha terminado el juego --')
-    print (f'Tu puntuación es: {score} /10')
-    print (f'Has fallado: {10-score} preguntas')
-    print ('Quieres ver las respuestas correctas')
-
 
 def check_answer(respuestas, user_answer):
     
@@ -57,32 +49,62 @@ def check_answer(respuestas, user_answer):
     score = 0       # -> Marcador. 
     user_fails = []
 
-    print (respuestas)
+    
 
     for respuesta in respuestas:
 
-        print (f'respuesta = {respuesta}')
-        print (f'user_answer[{anw_index}] = {user_answer[anw_index]}')
-
         if respuesta == user_answer[anw_index]:
-            score += 1            
+            score += 1 
+            print (f'score = ´{score}')           
         else:
             user_fails.append(anw_index)
 
         anw_index += 1
+
+    return user_fails, score
+
+
+def mostrar_respuesta(user_fails, preguntas, opciones, respuestas, user_answers):
     
-    print (f'La puntuacion es: {score}')
+    os.system('cls')
+    print ('--- Preguntas Falladas / Respuestas Correctas --- ')
+    
+    
+    marcar_opc = "[X]"
+    desmar_opc = "[ ]"
 
+    
+    # for n_fallo in user_fails:
+    for n_fallo in user_fails:
 
+        ord_res = (ord (respuestas[n_fallo]) - 96) - 1
+        ord_res_user = (ord (user_answers[n_fallo]) - 96) - 1
+        
+        
+        print (preguntas[n_fallo], end="")
 
-# Cargamos todas las respuesta en la lista de opciones
-# Se crea una lista de listas, cada lista interna es un conjunto de 4 respuesta A-D. 
-# La quinta linea de cada bloque, es la respuesta correcta. 
+        n_opcion = 0
 
+        for opcion in opciones[n_fallo]:
+            # print (opcion, end="")
+            opcion_marcada = desmar_opc
+            
+            
 
+            if n_opcion == ord_res_user:
+                opcion_marcada = marcar_opc
+            
+            print (f'{opcion_marcada} {opcion}', end="")
+            n_opcion += 1
+    
+        print (f'La opcion correcta es: {opciones[n_fallo][ord_res]}')
 
+    if len(user_fails) == 0:
+        print ('¡Enhorabuena! Has respondiendo correctamente a todas las pregutnas')
+    else:
+        print (f'Ha fallado {len(user_fails)} preguntas de {len(preguntas)}')
 
-# Mostrarmos el test completo. 
+    input ('Pulsa una tecla para continuar...')
 
 def star_game(preguntas, opciones):
     user_answers = [] 
@@ -106,25 +128,26 @@ def star_game(preguntas, opciones):
         
         if opc in letras:
             user_answers.append(opc)    
-            print (f'agrego la letra = {opc}')
-            
-        
         
         # os.system('cls')
         i +=1
         j = 0
     return user_answers
 
+def mostrar_marcador(score, preguntas):
+    
+    os.system('cls')
+    print ('El juego ha terminado')
+    print (f'score = {score}')
+    
+    score = score / len(preguntas) * 100
+    print (f'Has obtenido una puntacion de {score}%')
 
 preguntas, opciones, respuestas = load_data()
 
-# print (f'Preguntas   = {preguntas}')
-# print (f'Opciones    = {opciones}')
-# print (f'Respuestas  = {respuestas}')
-
 user_answers = star_game(preguntas, opciones)
 print (f'user_answers= {user_answers}')
-check_answer(respuestas,user_answers)
+user_fails, score = check_answer(respuestas,user_answers)
+mostrar_respuesta(user_fails, preguntas, opciones, respuestas, user_answers)
+mostrar_marcador(score, preguntas)
 
-
-# show_score (5,user_fails)
